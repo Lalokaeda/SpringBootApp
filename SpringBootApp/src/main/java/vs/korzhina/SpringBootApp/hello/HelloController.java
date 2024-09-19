@@ -30,7 +30,6 @@ public class HelloController {
         else {
             arList.add(s);
         }
-        //return s+" added";
     }
 
     @GetMapping("/show-array")
@@ -53,7 +52,6 @@ public class HelloController {
             map.put(mapKey, s);
             mapKey++;
         }
-        //return s+" added";
     }
 
     @GetMapping("/show-map")

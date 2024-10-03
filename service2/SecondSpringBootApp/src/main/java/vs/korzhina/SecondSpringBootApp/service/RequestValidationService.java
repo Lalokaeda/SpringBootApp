@@ -6,7 +6,6 @@ import org.springframework.validation.BindingResult;
 import vs.korzhina.SecondSpringBootApp.exception.UnsupportedCodeException;
 import vs.korzhina.SecondSpringBootApp.exception.ValidationFailedException;
 import vs.korzhina.SecondSpringBootApp.model.Request;
-import vs.korzhina.SecondSpringBootApp.model.Response;
 
 @Service
 public class RequestValidationService implements IValidationService {

@@ -1,6 +1,5 @@
 package vs.korzhina.SpringBootApp.service;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;

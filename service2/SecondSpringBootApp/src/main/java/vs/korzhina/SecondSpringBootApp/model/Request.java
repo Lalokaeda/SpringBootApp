@@ -1,4 +1,4 @@
-package vs.korzhina.SpringBootApp.model;
+package vs.korzhina.SecondSpringBootApp.model;
 
 
 import jakarta.validation.constraints.*;
@@ -23,7 +23,7 @@ public class Request {
     private String operationUid;
 
 
-    private Systems systemName;
+    private String systemName;
 
     @NotBlank
     private String systemTime;

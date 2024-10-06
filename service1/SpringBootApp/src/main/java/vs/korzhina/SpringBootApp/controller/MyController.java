@@ -11,6 +11,7 @@ import vs.korzhina.SpringBootApp.model.ErrorCodes;
 import vs.korzhina.SpringBootApp.model.ErrorMessages;
 import vs.korzhina.SpringBootApp.model.Request;
 import vs.korzhina.SpringBootApp.model.Response;
+import vs.korzhina.SpringBootApp.service.IModifyRequestService;
 import vs.korzhina.SpringBootApp.service.IModifyResponseService;
 import vs.korzhina.SpringBootApp.service.IValidationService;
 import vs.korzhina.SpringBootApp.util.DateTimeUtil;
@@ -30,18 +31,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class MyController {
     private final IValidationService validationService;
     private final IModifyResponseService modifyResponseService;
+    private final IModifyRequestService modifyRequestService;
+    private final IModifyRequestService modifyDateTimeRequestService;
 
     @Autowired
     public MyController(IValidationService validationService, 
-                        @Qualifier("ModifySystemTimeResponseService") IModifyResponseService modifyResponseService) {
+                        @Qualifier("ModifySystemTimeResponseService") IModifyResponseService modifyResponseService,
+                        @Qualifier("ModifySystemNameRequestService")IModifyRequestService modifyRequestService,
+                        @Qualifier("ModifySystemTimeRequestService")IModifyRequestService modifyDateTimeRequestService) {
         this.validationService = validationService;
         this.modifyResponseService=modifyResponseService;
+        this.modifyRequestService=modifyRequestService;
+        this.modifyDateTimeRequestService= modifyDateTimeRequestService;
     }
 
 @PostMapping(value="/feedback")
 public ResponseEntity<Response> feedback(@Valid @RequestBody Request request,
                                             BindingResult bindingResult) {
-
+    modifyDateTimeRequestService.modify(request);
     log.info("request: {}", request);                                            
     Response response = Response.builder()
                 .uid(request.getUid())
@@ -92,9 +99,10 @@ public ResponseEntity<Response> feedback(@Valid @RequestBody Request request,
     }
 
     modifyResponseService.modify(response);
+    modifyRequestService.modify(request);
     log.info("response after modification: {}", response);
 
-    return new ResponseEntity<>(response, HttpStatus.OK);
+    return new ResponseEntity<>(modifyResponseService.modify(response), HttpStatus.OK);
 }
 
 }

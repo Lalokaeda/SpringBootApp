@@ -13,32 +13,51 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Request {
 
+    //Уникальный идентификатор сообщения
     @NotBlank
     @Size(max=32)
     private String uid;
     
-    
+    //Уникальный идентификатор операции
     @NotBlank
     @Size(max=32)
     private String operationUid;
 
-
+    //Имя системы отправителя
     private String systemName;
 
+    //Время создания сообщения
     @NotBlank
     private String systemTime;
 
+    //Наименование ресурса
     private String source;
 
+    //Должность
+    private Positions position;
+
+    //Зарплата
+    private Double salary;
+
+    //Бонус
+    private Double bonus;
+
+    //Количество рабочих часов
+    private Integer workDays;
+
+    //Уникальный идентификатор коммуникации
     @Max(100000)
     @Min(1)
-    private int communicationId;
+    private Integer communicationId;
 
-    private int templateId;
+    //Уникальный идентификатор шаблона
+    private Integer templateId;
 
-    private int productCode;
+    //Код продукта
+    private Integer productCode;
     
-    private int smsCode;
+    //Смс код
+    private Integer smsCode;
 
     @Override
     public String toString() {
@@ -48,6 +67,10 @@ public class Request {
                 ", systemName=" + systemName + '\''+
                 ", systemTime=" + systemTime + '\''+
                 ", source=" + source + '\''+
+                ", position=" + position + '\''+
+                ", salary=" + salary + '\''+
+                ", bonus=" + bonus + '\''+
+                ", workDays=" + workDays + '\''+
                 ", communicationId=" + communicationId + '\''+
                 ", templateId=" + templateId + '\''+
                 ", productCode=" + productCode + '\''+

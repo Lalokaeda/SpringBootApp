@@ -4,17 +4,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import vs.korzhina.SpringBootApp.exception.UnsupportedCodeException;
-import vs.korzhina.SpringBootApp.exception.ValidationFailedException;
-import vs.korzhina.SpringBootApp.model.Codes;
-import vs.korzhina.SpringBootApp.model.ErrorCodes;
-import vs.korzhina.SpringBootApp.model.ErrorMessages;
 import vs.korzhina.SpringBootApp.model.Request;
 import vs.korzhina.SpringBootApp.model.Response;
 import vs.korzhina.SpringBootApp.service.IModifyRequestService;
 import vs.korzhina.SpringBootApp.service.IModifyResponseService;
 import vs.korzhina.SpringBootApp.service.IValidationService;
-import vs.korzhina.SpringBootApp.util.DateTimeUtil;
+import vs.korzhina.SpringBootApp.util.ResponseUtil;
 
 import java.util.Date;
 
@@ -50,52 +45,20 @@ public ResponseEntity<Response> feedback(@Valid @RequestBody Request request,
                                             BindingResult bindingResult) {
     modifyDateTimeRequestService.modify(request);
     log.info("request: {}", request);                                            
-    Response response = Response.builder()
-                .uid(request.getUid())
-                .operationUid(request.getOperationUid())
-                .systemTime(DateTimeUtil.getCustomFormat().format(new Date()))
-                .code(Codes.SUCCESS)
-                .errorCode(ErrorCodes.EMPTY)
-                .errorMessage(ErrorMessages.EMPTY)
-                .build();
+    Response response = ResponseUtil.CreateResponse(request);
     log.info("response: {}", response);  
 
-    if (bindingResult.hasErrors()) {
-        StringBuilder errorMessages = new StringBuilder("Validation errors: ");
-        bindingResult.getFieldErrors().forEach(error -> {
-            errorMessages.append(String.format("[%s: %s] ", error.getField(), error.getDefaultMessage()));
-        });
-        response.setCode(Codes.FAILED);
-        response.setErrorCode(ErrorCodes.VALIDATION_EXCEPTION);
-        response.setErrorMessage(ErrorMessages.VALIDATION);
-        
-        log.error("Validation failed: {}", errorMessages.toString());
-        log.error("response after validation errors: {}", response);
-        
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
 
-    try {
-        validationService.isValid(bindingResult);
-        validationService.isUnsupportedCodeException(request);
-    } catch (UnsupportedCodeException e) {
-        response.setCode(Codes.FAILED);
-        response.setErrorCode(ErrorCodes.UNSUPPORTED_EXCEPTION);
-        response.setErrorMessage(ErrorMessages.UNSUPPORTED);
-        log.error("response unsupported exception: {}", response, e.getMessage());  
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    } catch (ValidationFailedException e) {
-        response.setCode(Codes.FAILED);
-        response.setErrorCode(ErrorCodes.VALIDATION_EXCEPTION);
-        response.setErrorMessage(ErrorMessages.VALIDATION);
-        log.error("response validation exception: {}", response, e.getMessage()); 
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    } catch(Exception e){
-        response.setCode(Codes.FAILED);
-        response.setErrorCode(ErrorCodes.UNKNOWN_EXCEPTION);
-        response.setErrorMessage(ErrorMessages.UNKNOWN);
-        log.error("response unknown exception: {}", response, e.getMessage()); 
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    response=ResponseUtil.Validate(validationService, request, bindingResult, response);
+    switch (response.getErrorCode()) {
+        case VALIDATION_EXCEPTION:
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        case UNSUPPORTED_EXCEPTION:
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        case UNKNOWN_EXCEPTION:    
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        default:
+            break;
     }
 
     modifyResponseService.modify(response);

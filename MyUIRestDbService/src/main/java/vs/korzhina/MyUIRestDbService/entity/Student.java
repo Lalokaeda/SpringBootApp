@@ -3,6 +3,8 @@ package vs.korzhina.MyUIRestDbService.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Getter
+@Setter
 @Data
 @Entity
 @NoArgsConstructor
@@ -11,7 +13,7 @@ import lombok.*;
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @Column(name = "name")
     private String name;

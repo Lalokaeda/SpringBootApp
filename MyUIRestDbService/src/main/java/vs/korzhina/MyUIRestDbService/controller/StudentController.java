@@ -8,8 +8,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import lombok.extern.slf4j.Slf4j;
-import vs.korzhina.MyUIRestDbService.dao.IStudentRepository;
 import vs.korzhina.MyUIRestDbService.entity.Student;
+import vs.korzhina.MyUIRestDbService.repository.IStudentRepository;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,8 +30,9 @@ public class StudentController {
         this.studentRepository = studentRepository;
     }
     
-    @GetMapping({"/list", "/"})
+    @GetMapping("/list")
     public ModelAndView getAllStudents(){
+        log.info("/list -> connection");
         ModelAndView mav = new ModelAndView("list-students");
         mav.addObject("students", studentRepository.findAll());
         return mav;
@@ -46,13 +47,13 @@ public class StudentController {
     }
 
     @PostMapping("/saveStudent")
-    public RedirectView saveStudent(@ModelAttribute Student student) {
+    public String saveStudent(@ModelAttribute Student student) {
         studentRepository.save(student);
-        return new RedirectView("list");
+        return "redirect:/list";
     }
     
     @GetMapping("/showUpdateForm")
-    public ModelAndView showUpdateForm(@RequestParam int studentId) {
+    public ModelAndView showUpdateForm(@RequestParam long studentId) {
         ModelAndView mav = new ModelAndView("add-student-form");
         Optional<Student> optionalStudent = studentRepository.findById(studentId);
         Student student=new Student();
@@ -64,9 +65,9 @@ public class StudentController {
     }
 
     @GetMapping("/deleteStudent")
-    public RedirectView deleteStudent(@RequestParam int studentId, ModelAndView model) {
+    public String deleteStudent(@RequestParam long studentId, ModelAndView model) {
         studentRepository.deleteById(studentId);
-        return new RedirectView("list");
+        return "redirect:/list";
     }
     
     
